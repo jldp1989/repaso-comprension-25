@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrenador CPT - Nivel Avanzado</title>
+    <style>
+        :root {
+            --primary: #1a252f;
+            --secondary: #2c3e50;
+            --accent: #2980b9;
+            --correct: #27ae60;
+            --wrong: #c0392b;
+            --bg: #ecf0f1;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* --- HEADER & NAV --- */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 4px solid var(--accent);
+        }
+
+        header h1 { margin: 0; font-size: 1.8rem; }
+        header p { margin: 5px 0 0; opacity: 0.8; font-size: 0.9rem; }
+
+        nav {
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            background: transparent;
+            border: none;
+            padding: 15px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--secondary);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        nav button:hover { background-color: #f8f9fa; color: var(--accent); }
+        nav button.active { border-bottom-color: var(--accent); color: var(--accent); }
+
+        /* --- MAIN CONTAINER --- */
+        main {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 15px;
+            min-height: 80vh;
+        }
+
+        .page-section { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .page-section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- CARDS & UTILS --- */
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--accent);
+        }
+
+        h2 { color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 0; }
+        h3 { color: var(--secondary); margin-top: 25px; margin-bottom: 15px; font-size: 1.3rem; }
+
+        .micro-lesson {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+        .micro-lesson strong { color: #533f03; }
+
+        .btn {
+            background-color: var(--accent);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+        .btn:hover { background-color: #1c5980; }
+
+        /* --- QUIZ ELEMENTS --- */
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 8px 0;
+            background: #f1f2f6;
+            border: 2px solid transparent;
+            border-radius: 6px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+        .quiz-option:hover { background: #e2e6ea; border-color: #cbd5e0; }
+        
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+            font-weight: 500;
+        }
+        .feedback.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        /* --- INTERACTIVE TEXT (VERBS/COHESION) --- */
+        .interactive-text {
+            line-height: 2.2;
+            font-size: 1.1rem;
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+        .clickable-word {
+            padding: 2px 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 2px solid #ddd;
+        }
+        .clickable-word:hover { background-color: #dfe6e9; }
+        .clickable-word.correct { background-color: var(--correct); color: white; border-color: var(--correct); }
+        .clickable-word.wrong { background-color: var(--wrong); color: white; border-color: var(--wrong); }
+
+        /* --- INPUT EXERCISES --- */
+        .input-exercise {
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .input-exercise input, .input-exercise select {
+            padding: 8px;
+            margin: 5px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        /* --- CUADRO SINÓPTICO BUILDER --- */
+        .synoptic-workspace {
+            background: #fff;
+            padding: 20px;
+            overflow-x: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .bank-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 15px;
+            background: #eef2f3;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            min-height: 60px;
+        }
+
+        .concept-card {
+            background: white;
+            border: 1px solid var(--secondary);
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            user-select: none;
+        }
+        .concept-card.selected { background: var(--accent); color: white; transform: scale(1.05); }
+        .concept-card.placed { opacity: 0.5; cursor: not-allowed; background: #ddd; color: #777; }
+
+        /* Tree Structure CSS */
+        .tree-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 10px;
+        }
+        
+        .tree-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .tree-slot {
+            width: 180px;
+            height: 60px;
+            border: 2px dashed #bdc3c7;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #95a5a6;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 5px;
+            text-align: center;
+        }
+        .tree-slot:hover { background-color: #ecf0f1; }
+        .tree-slot.filled { border-style: solid; border-color: var(--secondary); background: white; color: var(--text); }
+        .tree-slot.correct-slot { border-color: var(--correct); background: #e8f5e9; }
+
+        /* Connecting Lines */
+        .tree-connector {
+            width: 60px;
+            height: 2px;
+            background: var(--secondary);
+            position: relative;
+        }
+        .tree-connector-vert {
+            width: 2px;
+            height: 100px;
+            background: var(--secondary);
+        }
+
+        .exercise-number {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🎯 Entrenador CPT - Nivel Avanzado</h1>
+    <p>Comprensión y Producción Textual | Repaso Integrador</p>
+</header>
+
+<nav>
+    <button onclick="showPage('sintaxis')" class="active">📊 Sintaxis</button>
+    <button onclick="showPage('verbos')">⚡ Verbos</button>
+    <button onclick="showPage('cohesion')">🔗 Cohesión</button>
+</nav>
+
+<main>
+
+    <!-- ============================================= -->
+    <!-- SECCIÓN 1: SINTAXIS (CUADROS SINÓPTICOS) -->
+    <!-- ============================================= -->
+    <section id="page-sintaxis" class="page-section active">
+        
+        <div class="card">
+            <h2>📊 Módulo 1: Sintaxis y Análisis Textual</h2>
+            
+            <div class="micro-lesson">
+                <strong>Recordatorio:</strong> El <strong>Cuadro Sinóptico</strong> es una herramienta visual para organizar jerárquicamente las ideas de un texto. Estructura: <strong>Idea Central</strong> (tema) → <strong>Categorías</strong> (subtemas) → <strong>Ideas Principales</strong> (detalles específicos). La orientación horizontal permite ver relaciones de izquierda a derecha.
+            </div>
+
+            <!-- EJERCICIO 1 -->
+            <h3><span class="exercise-number">Ejercicio 1</span> Construcción de Cuadro Sinóptico</h3>
+            <p><strong>Texto:</strong> "La Inteligencia Artificial revoluciona múltiples sectores. En educación, personaliza el aprendizaje y automatiza evaluaciones. En salud, diagnostica enfermedades y predice brotes epidémicos. En el sector financiero, detecta fraudes y optimiza inversiones."</p>
+            
+            <div class="synoptic-workspace">
+                <h4>Banco de Conceptos:</h4>
+                <div class="bank-container" id="synoptic-bank-1"></div>
+                
+                <div class="tree-container">
+                    <div class="tree-column">
+                        <div class="tree-slot" data-correct="tema" onclick="placeConcept(this, 1)">[IDEA CENTRAL]</div>
+                    </div>
+                    
+                    <div class="tree-connector"></div>
+                    
+                    <div class="tree-column">
+                        <div class="tree-slot" data-correct="cat1" onclick="placeConcept(this, 1)">[CATEGORÍA 1]</div>
+                        <div class="tree-slot" data-correct="cat2" onclick="placeConcept(this, 1)">[CATEGORÍA 2]</div>
+                        <div class="tree-slot" data-correct="cat3" onclick="placeConcept(this, 1)">[CATEGORÍA 3]</div>
+                    </div>
+                    
+                    <div class="tree-connector"></div>
+                    
+                    <div class="tree-column">
+                        <div class="tree-slot" data-correct="ip1" onclick="placeConcept(this, 1)">[IDEA PRINCIPAL]</div>
+                        <div class="tree-slot" data-correct="ip2" onclick="placeConcept(this, 1)">[IDEA PRINCIPAL]</div>
+                        <div class="tree-slot" data-correct="ip3" onclick="placeConcept(this, 1)">[IDEA PRINCIPAL]</div>
+                        <div class="tree-slot" data-correct="ip4" onclick="placeConcept(this, 1)">[IDEA PRINCIPAL]</div>
+                        <div class="tree-slot" data-correct="ip5" onclick="placeConcept(this, 1)">[IDEA PRINCIPAL]</div>
+                        <div class="tree-slot" data-correct="ip6" onclick="placeConcept(this, 1)">[IDEA PRINCIPAL]</div>
+                    </div>
+                </div>
+                
+                <div class="feedback" id="synoptic-feedback-1"></div>
+                <button class="btn" onclick="resetSynoptic(1)" style="margin-top: 15px;">Reiniciar</button>
+            </div>
+
+            <!-- EJERCICIO 2 -->
+            <h3><span class="exercise-number">Ejercicio 2</span> Jerarquización de Ideas</h3>
+            <p><strong>Texto breve:</strong> "El cambio climático amenaza la biodiversidad argentina. Los glaciares patagónicos retroceden aceleradamente. La Puna experimenta sequías extremas. El Litoral enfrenta inundaciones recurrentes."</p>
+            
+            <div id="quiz-jerarquia-1"></div>
+
+            <!-- EJERCICIO 3 -->
+            <h3><span class="exercise-number">Ejercicio 3</span> Identificación de Categorías</h3>
+            <p><strong>Texto:</strong> "La inflación golpea el bolsillo argentino. Los alimentos aumentaron 15% mensual. Los servicios públicos subieron 20%. El transporte incrementó sus tarifas 12%."</p>
+            
+            <div id="quiz-categorias-1"></div>
+
+            <!-- EJERCICIO 4 -->
+            <h3><span class="exercise-number">Ejercicio 4</span> Cuadro Sinóptico Complejo</h3>
+            <p><strong>Texto periodístico:</strong> "La reforma educativa propone tres ejes. El eje pedagógico incluye actualización curricular y nuevos métodos de enseñanza. El eje de infraestructura contempla construcción de escuelas y equipamiento tecnológico. El eje laboral aborda salarios docentes y condiciones de trabajo."</p>
+            
+            <div class="synoptic-workspace">
+                <h4>Banco de Conceptos:</h4>
+                <div class="bank-container" id="synoptic-bank-2"></div>
+                
+                <div class="tree-container">
+                    <div class="tree-column">
+                        <div class="tree-slot" data-correct="tema" onclick="placeConcept(this, 2)">[TEMA]</div>
+                    </div>
+                    
+                    <div class="tree-connector"></div>
+                    
+                    <div class="tree-column">
+                        <div class="tree-slot" data-correct="cat1" onclick="placeConcept(this, 2)">[CATEGORÍA]</div>
+                        <div class="tree-slot" data-correct="cat2" onclick="placeConcept(this, 2)">[CATEGORÍA]</div>
+                        <div class="tree-slot" data-correct="cat3" onclick="placeConcept(this, 2)">[CATEGORÍA]</div>
+                    </div>
+                    
+                    <div class="tree-connector"></div>
+                    
+                    <div class="tree-column">
+                        <div class="tree-slot" data-correct="ip1" onclick="placeConcept(this, 2)">[DETALLE]</div>
+                        <div class="tree-slot" data-correct="ip2" onclick="placeConcept(this, 2)">[DETALLE]</div>
+                        <div class="tree-slot" data-correct="ip3" onclick="placeConcept(this, 2)">[DETALLE]</div>
+                        <div class="tree-slot" data-correct="ip4" onclick="placeConcept(this, 2)">[DETALLE]</div>
+                        <div class="tree-slot" data-correct="ip5" onclick="placeConcept(this, 2)">[DETALLE]</div>
+                        <div class="tree-slot" data-correct="ip6" onclick="placeConcept(this, 2)">[DETALLE]</div>
+                    </div>
+                </div>
+                
+                <div class="feedback" id="synoptic-feedback-2"></div>
+                <button class="btn" onclick="resetSynoptic(2)" style="margin-top: 15px;">Reiniciar</button>
+            </div>
+
+            <!-- EJERCICIO 5 -->
+            <h3><span class="exercise-number">Ejercicio 5</span> Análisis de Estructura Textual</h3>
+            <p>Lee el siguiente fragmento y responde:</p>
+            <p style="background: #f9f9f9; padding: 15px; border-left: 3px solid var(--accent);">
+                "El litio argentino atrae inversiones millonarias. Las salinas del Noroeste contienen reservas estratégicas. Empresas internacionales negocian concesiones. Comunidades originarias reclaman participación en las decisiones."
+            </p>
+            
+            <div id="quiz-estructura-1"></div>
+
+            <!-- EJERCICIO 6 -->
+            <h3><span class="exercise-number">Ejercicio 6</span> Práctica Rápida: ¿Tema o Categoría?</h3>
+            <div id="quiz-tema-categoria"></div>
+
+        </div>
+
+    </section>
+
+    <!-- ============================================= -->
+    <!-- SECCIÓN 2: VERBOS -->
+    <!-- ============================================= -->
+    <section id="page-verbos" class="page-section">
+        
+        <div class="card">
+            <h2>⚡ Módulo 2: Análisis Verbal</h2>
+            
+            <div class="micro-lesson">
+                <strong>Recordatorio:</strong> Los verbos son el núcleo del predicado. Analizarlos morfológicamente implica identificar <strong>persona, número, tiempo, modo</strong>. Sintácticamente, distinguimos <strong>verbos principales</strong> (núcleo de la oración) de <strong>subordinados</strong> (dependen de otro verbo). La <strong>correlación temporal</strong> asegura coherencia entre tiempos verbales.
+            </div>
+
+            <!-- EJERCICIO 1: MORFOLOGÍA -->
+            <h3><span class="exercise-number">Ejercicio 1</span> Análisis Morfológico</h3>
+            <p>Analiza la forma verbal: <strong>"Los diputados votaron la reforma anoche"</strong></p>
+            <p>Verbo: <strong>votaron</strong></p>
+            
+            <div class="input-exercise">
+                <label>Persona: 
+                    <select id="va-persona-1">
+                        <option value="">Seleccionar</option>
+                        <option value="1">1ra</option>
+                        <option value="2">2da</option>
+                        <option value="3">3ra</option>
+                    </select>
+                </label>
+                
+                <label>Número: 
+                    <select id="va-numero-1">
+                        <option value="">Seleccionar</option>
+                        <option value="S">Singular</option>
+                        <option value="P">Plural</option>
+                    </select>
+                </label>
+                
+                <label>Tiempo: 
+                    <select id="va-tiempo-1">
+                        <option value="">Seleccionar</option>
+                        <option value="pres">Presente</option>
+                        <option value="pi">Pretérito Imperfecto</option>
+                        <option value="ps">Pretérito Perfecto Simple</option>
+                        <option value="fut">Futuro</option>
+                    </select>
+                </label>
+                
+                <label>Modo: 
+                    <select id="va-modo-1">
+                        <option value="">Seleccionar</option>
+                        <option value="ind">Indicativo</option>
+                        <option value="subj">Subjuntivo</option>
+                        <option value="imp">Imperativo</option>
+                    </select>
+                </label>
+                
+                <br><button class="btn" onclick="checkMorphology(1)">Verificar</button>
+                <div class="feedback" id="morph-feedback-1"></div>
+            </div>
+
+            <!-- EJERCICIO 2: MORFOLOGÍA 2 -->
+            <h3><span class="exercise-number">Ejercicio 2</span> Análisis Morfológico II</h3>
+            <p>Analiza: <strong>"Si el gobierno hubiera negociado mejor, la crisis se habría evitado"</strong></p>
+            <p>Verbo: <strong>hubiera negociado</strong></p>
+            
+            <div class="input-exercise">
+                <label>Tiempo: 
+                    <select id="va-tiempo-2">
+                        <option value="">Seleccionar</option>
+                        <option value="pres">Presente</option>
+                        <option value="pi">Pretérito Imperfecto</option>
+                        <option value="ppc">Pretérito Pluscuamperfecto</option>
+                        <option value="fut">Futuro</option>
+                    </select>
+                </label>
+                
+                <label>Modo: 
+                    <select id="va-modo-2">
+                        <option value="">Seleccionar</option>
+                        <option value="ind">Indicativo</option>
+                        <option value="subj">Subjuntivo</option>
+                        <option value="cond">Condicional</option>
+                    </select>
+                </label>
+                
+                <br><button class="btn" onclick="checkMorphology(2)">Verificar</button>
+                <div class="feedback" id="morph-feedback-2"></div>
+            </div>
+
+            <!-- EJERCICIO 3: CAZA DE VERBOS -->
+            <h3><span class="exercise-number">Ejercicio 3</span> Identificación Sintáctica</h3>
+            <p>Haz clic en los <strong>verbos principales</strong> (núcleo del predicado). Evita los subordinados.</p>
+            
+            <div class="interactive-text" id="verb-hunt-text-1"></div>
+            <div class="feedback" id="verb-hunt-feedback-1"></div>
+
+            <!-- EJERCICIO 4: CAZA DE VERBOS 2 -->
+            <h3><span class="exercise-number">Ejercicio 4</span> Verbos Principales vs Subordinados</h3>
+            <p>Identifica solo los <strong>verbos principales</strong>:</p>
+            
+            <div class="interactive-text" id="verb-hunt-text-2"></div>
+            <div class="feedback" id="verb-hunt-feedback-2"></div>
+
+            <!-- EJERCICIO 5: CORRELACIÓN TEMPORAL -->
+            <h3><span class="exercise-number">Ejercicio 5</span> Correlación Temporal</h3>
+            <div id="quiz-corr-container-1"></div>
+
+            <!-- EJERCICIO 6: CORRELACIÓN 2 -->
+            <h3><span class="exercise-number">Ejercicio 6</span> Correlación en Discurso Referido</h3>
+            <div id="quiz-corr-container-2"></div>
+
+        </div>
+
+    </section>
+
+    <!-- ============================================= -->
+    <!-- SECCIÓN 3: COHESIÓN -->
+    <!-- ============================================= -->
+    <section id="page-cohesion" class="page-section">
+        
+        <div class="card">
+            <h2>🔗 Módulo 3: Recursos de Cohesión</h2>
+            
+            <div class="micro-lesson">
+                <strong>Recordatorio:</strong> La <strong>cohesión</strong> conecta las partes del texto. Recursos principales: <strong>referencia</strong> (pronombres, demostrativos), <strong>sustitución léxica</strong> (sinónimos, hiperónimos), <strong>elipsis</strong>, <strong>conectores</strong> (causales, consecutivos, adversativos).
+            </div>
+
+            <!-- EJERCICIO 1: REFERENCIA ANAFÓRICA -->
+            <h3><span class="exercise-number">Ejercicio 1</span> Referencia Pronominal</h3>
+            <p style="background: #f9f9f9; padding: 15px; border-left: 3px solid var(--accent);">
+                "El presidente anunció medidas económicas. <strong>Estas</strong> buscan controlar la inflación. Los analistas <strong>las</strong> consideran insuficientes."
+            </p>
+            
+            <div id="quiz-coh-container-1"></div>
+
+            <!-- EJERCICIO 2: REFERENCIA 2 -->
+            <h3><span class="exercise-number">Ejercicio 2</span> Identificación de Referentes</h3>
+            <p style="background: #f9f9f9; padding: 15px; border-left: 3px solid var(--accent);">
+                "La sequía afecta al campo argentino. <strong>Esto</strong> preocupa a los productores. <strong>Ellos</strong> reclaman asistencia estatal."
+            </p>
+            
+            <div id="quiz-coh-container-2"></div>
+
+            <!-- EJERCICIO 3: SUSTITUCIÓN LÉXICA -->
+            <h3><span class="exercise-number">Ejercicio 3</span> Sustitución Léxica</h3>
+            <div id="quiz-coh-container-3"></div>
+
+            <!-- EJERCICIO 4: CONECTORES -->
+            <h3><span class="exercise-number">Ejercicio 4</span> Uso de Conectores</h3>
+            <div id="quiz-coh-container-4"></div>
+
+            <!-- EJERCICIO 5: ELIPSIS -->
+            <h3><span class="exercise-number">Ejercicio 5</span> Reconocimiento de Elipsis</h3>
+            <p style="background: #f9f9f9; padding: 15px; border-left: 3px solid var(--accent);">
+                "Los senadores debatieron la ley durante horas. Finalmente, <strong>Ø</strong> aprobaron el proyecto por unanimidad."
+            </p>
+            
+            <div id="quiz-coh-container-5"></div>
+
+            <!-- EJERCICIO 6: IDENTIFICACIÓN INTERACTIVA -->
+            <h3><span class="exercise-number">Ejercicio 6</span> Práctica Interactiva</h3>
+            <p>Identifica los <strong>recursos de cohesión</strong> (cliquea las palabras que funcionan como referencia o sustitución):</p>
+            
+            <div class="interactive-text" id="cohesion-hunt-text"></div>
+            <div class="feedback" id="cohesion-hunt-feedback"></div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<script>
+    // ==========================================
+    // NAVEGACIÓN
+    // ==========================================
+    function showPage(pageName) {
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        document.getElementById('page-' + pageName).classList.add('active');
+        
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+
+    // ==========================================
+    // MÓDULO 1: SINTAXIS (CUADROS SINÓPTICOS)
+    // ==========================================
+
+    const synopticData = {
+        1: {
+            concepts: [
+                { text: "IA revoluciona sectores", type: "tema" },
+                { text: "Educación", type: "cat1" },
+                { text: "Salud", type: "cat2" },
+                { text: "Sector financiero", type: "cat3" },
+                { text: "Personaliza aprendizaje", type: "ip1" },
+                { text: "Automatiza evaluaciones", type: "ip2" },
+                { text: "Diagnostica enfermedades", type: "ip3" },
+                { text: "Predice brotes", type: "ip4" },
+                { text: "Detecta fraudes", type: "ip5" },
+                { text: "Optimiza inversiones", type: "ip6" }
+            ]
+        },
+        2: {
+            concepts: [
+                { text: "Reforma educativa", type: "tema" },
+                { text: "Eje pedagógico", type: "cat1" },
+                { text: "Eje infraestructura", type: "cat2" },
+                { text: "Eje laboral", type: "cat3" },
+                { text: "Actualización curricular", type: "ip1" },
+                { text: "Nuevos métodos enseñanza", type: "ip2" },
+                { text: "Construcción escuelas", type: "ip3" },
+                { text: "Equipamiento tecnológico", type: "ip4" },
+                { text: "Salarios docentes", type: "ip5" },
+                { text: "Condiciones de trabajo", type: "ip6" }
+            ]
+        }
+    };
+
+    let selectedConcepts = {};
+
+    function initSynoptic(num) {
+        selectedConcepts[num] = null;
+        const bank = document.getElementById('synoptic-bank-' + num);
+        bank.innerHTML = '';
+        synopticData[num].concepts.forEach((c, idx) => {
+            const card = document.createElement('div');
+            card.className = 'concept-card';
+            card.innerText = c.text;
+            card.dataset.type = c.type;
+            card.dataset.synNum = num;
+            card.onclick = function() { selectConcept(this, num); };
+            bank.appendChild(card);
+        });
+    }
+
+    function selectConcept(el, num) {
+        if (el.classList.contains('placed')) return;
+        document.querySelectorAll(`.concept-card[data-syn-num="${num}"]`).forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedConcepts[num] = el;
+    }
+
+    function placeConcept(slot, num) {
+        if (!selectedConcepts[num]) return;
+        
+        const correctType = slot.dataset.correct;
+        const selectedType = selectedConcepts[num].dataset.type;
+        const feedback = document.getElementById('synoptic-feedback-' + num);
+
+        if (correctType === selectedType) {
+            slot.innerText = selectedConcepts[num].innerText;
+            slot.classList.add('filled', 'correct-slot');
+            selectedConcepts[num].classList.remove('selected');
+            selectedConcepts[num].classList.add('placed');
+            selectedConcepts[num] = null;
+            feedback.className = 'feedback success';
+            feedback.innerHTML = '✅ ¡Correcto! Bien ubicado.';
+            feedback.style.display = 'block';
+        } else {
+            feedback.className = 'feedback error';
+            let msg = "Ese concepto no va ahí. ";
+            if(correctType === 'tema') msg += "Busca la Idea Central (el tema general).";
+            if(correctType.includes('cat')) msg += "Busca una Categoría (subtema).";
+            if(correctType.includes('ip')) msg += "Busca una Idea Principal (detalle específico).";
+            
+            feedback.innerHTML = '❌ ' + msg;
+            feedback.style.display = 'block';
+        }
+    }
+
+    function resetSynoptic(num) {
+        initSynoptic(num);
+        document.querySelectorAll('.tree-slot').forEach(s => {
+            s.className = 'tree-slot';
+            const correct = s.dataset.correct;
+            if(correct === 'tema') s.innerText = '[TEMA]';
+            else if(correct && correct.includes('cat')) s.innerText = '[CATEGORÍA]';
+            else if(correct && correct.includes('ip')) s.innerText = '[DETALLE]';
+        });
+        document.getElementById('synoptic-feedback-' + num).style.display = 'none';
+    }
+
+    // QUIZZES DE SINTAXIS
+    const quizJerarquia1 = [
+        {
+            q: "¿Cuál es la IDEA CENTRAL del texto?",
+            opts: [
+                { t: "Los glaciares retroceden", c: false, f: "No. Eso es un detalle específico." },
+                { t: "El cambio climático amenaza la biodiversidad", c: true, f: "¡Exacto! Es el tema que engloba todo." },
+                { t: "La Puna experimenta sequías", c: false, f: "Incorrecto. Es una categoría específica." }
+            ]
+        }
+    ];
+
+    const quizCategorias1 = [
+        {
+            q: "¿Cuántas categorías principales identificas?",
+            opts: [
+                { t: "Dos", c: false, f: "Repasa: ¿cuántos tipos de productos/servicios menciona?" },
+                { t: "Tres", c: true, f: "¡Correcto! Alimentos, servicios públicos y transporte." },
+                { t: "Cuatro", c: false, f: "Contá de nuevo los sectores mencionados." }
+            ]
+        }
+    ];
+
+    const quizEstructura1 = [
+        {
+            q: "¿Qué elemento NO pertenece al mismo nivel jerárquico?",
+            opts: [
+                { t: "Salinas del Noroeste", c: true, f: "¡Bien! Es una categoría, mientras que las demás son ideas principales/detalles." },
+                { t: "Empresas internacionales negocian", c: false, f: "Esto es una idea principal del mismo nivel." },
+                { t: "Comunidades reclaman", c: false, f: "También es una idea principal." }
+            ]
+        }
+    ];
+
+    const quizTemaCat = [
+        {
+            q: "'Las redes sociales transforman la comunicación política' es:",
+            opts: [
+                { t: "Una categoría", c: false, f: "No. Es demasiado general para ser categoría." },
+                { t: "Una idea central/tema", c: true, f: "¡Correcto! Es el tema principal que se desarrollaría." },
+                { t: "Una idea principal", c: false, f: "Es más general que eso." }
+            ]
+        },
+        {
+            q: "'Twitter facilita debates instantáneos' es:",
+            opts: [
+                { t: "Una categoría", c: false, f: "Es muy específico para categoría." },
+                { t: "Una idea central", c: false, f: "Es demasiado específico." },
+                { t: "Una idea principal/detalle", c: true, f: "¡Bien! Es un detalle concreto." }
+            ]
+        }
+    ];
+
+    renderSimpleQuiz('quiz-jerarquia-1', quizJerarquia1);
+    renderSimpleQuiz('quiz-categorias-1', quizCategorias1);
+    renderSimpleQuiz('quiz-estructura-1', quizEstructura1);
+    renderSimpleQuiz('quiz-tema-categoria', quizTemaCat);
+
+    // ==========================================
+    // MÓDULO 2: VERBOS
+    // ==========================================
+
+    // Morfología 1: votaron
+    function checkMorphology(num) {
+        if(num === 1) {
+            const p = document.getElementById('va-persona-1').value;
+            const n = document.getElementById('va-numero-1').value;
+            const t = document.getElementById('va-tiempo-1').value;
+            const m = document.getElementById('va-modo-1').value;
+            const fb = document.getElementById('morph-feedback-1');
+
+            if (p === '3' && n === 'P' && t === 'ps' && m === 'ind') {
+                fb.className = 'feedback success';
+                fb.innerHTML = "✅ ¡Perfecto! 'Votaron' es 3ra Plural, Pretérito Perfecto Simple del Indicativo. La terminación '-aron' indica acción puntual en el pasado.";
+            } else {
+                fb.className = 'feedback error';
+                fb.innerHTML = "❌ Incorrecto. Pista: ¿Quiénes votaron? Los diputados (ellos = 3ra plural). ¿Cuándo? Anoche = acción puntual pasada.";
+            }
+            fb.style.display = 'block';
+        }
+        
+        if(num === 2) {
+            const t = document.getElementById('va-tiempo-2').value;
+            const m = document.getElementById('va-modo-2').value;
+            const fb = document.getElementById('morph-feedback-2');
+
+            if (t === 'ppc' && m === 'subj') {
+                fb.className = 'feedback success';
+                fb.innerHTML = "✅ ¡Excelente! 'Hubiera negociado' es Pretérito Pluscuamperfecto del Subjuntivo. Se usa en hipótesis irreales del pasado.";
+            } else {
+                fb.className = 'feedback error';
+                fb.innerHTML = "❌ Revisa: 'hubiera' (auxiliar en subjuntivo pasado) + 'negociado' (participio) = tiempo compuesto del subjuntivo.";
+            }
+            fb.style.display = 'block';
+        }
+    }
+
+    // Caza de verbos 1
+    const verbTextData1 = [
+        { w: "La", t: "o" }, { w: "economía", t: "o" }, { w: "argentina", t: "o" },
+        { w: "enfrenta", t: "main", f: "¡Bien! 'Enfrenta' es el verbo principal." },
+        { w: "desafíos", t: "o" }, { w: "que", t: "o" },
+        { w: "requieren", t: "sub", f: "Error. 'Requieren' depende de 'que', es subordinado." },
+        { w: "soluciones.", t: "o" }, { w: "Los", t: "o" }, { w: "economistas", t: "o" },
+        { w: "proponen", t: "main", f: "¡Correcto! 'Proponen' es núcleo del segundo predicado." },
+        { w: "medidas", t: "o" }, { w: "que", t: "o" },
+        { w: "podrían", t: "sub", f: "Incorrecto. Subordinado introducido por 'que'." },
+        { w: "reactivar", t: "o" }, { w: "el", t: "o" }, { w: "consumo.", t: "o" }
+    ];
+
+    // Caza de verbos 2
+    const verbTextData2 = [
+        { w: "El", t: "o" }, { w: "Congreso", t: "o" },
+        { w: "debate", t: "main", f: "¡Perfecto! Verbo principal." },
+        { w: "leyes", t: "o" }, { w: "que", t: "o" },
+        { w: "buscan", t: "sub", f: "Error. Subordinado." },
+        { w: "regular", t: "o" }, { w: "la", t: "o" }, { w: "tecnología.", t: "o" },
+        { w: "Muchos", t: "o" }, { w: "legisladores", t: "o" },
+        { w: "temen", t: "main", f: "¡Correcto!" },
+        { w: "que", t: "o" }, { w: "las", t: "o" }, { w: "empresas", t: "o" },
+        { w: "evadan", t: "sub", f: "Subordinado en subjuntivo." },
+        { w: "controles.", t: "o" }
+    ];
+
+    function initVerbHunt(num, data, containerId, feedbackId) {
+        const container = document.getElementById(containerId);
+        let html = '';
+        data.forEach(item => {
+            if(item.t === 'o') {
+                html += `<span>${item.w} </span>`;
+            } else {
+                html += `<span class="clickable-word" onclick="checkVerbSyntax(this, '${item.t}', '${item.f}', '${feedbackId}')">${item.w} </span>`;
+            }
+        });
+        container.innerHTML = html;
+    }
+
+    function checkVerbSyntax(el, type, feedbackMsg, feedbackId) {
+        const fb = document.getElementById(feedbackId);
+        if (type === 'main') {
+            el.className = 'clickable-word correct';
+            fb.className = 'feedback success';
+            fb.innerHTML = "✅ " + feedbackMsg;
+        } else {
+            el.className = 'clickable-word wrong';
+            fb.className = 'feedback error';
+            fb.innerHTML = "❌ " + feedbackMsg;
+        }
+        fb.style.display = 'block';
+    }
+
+    // Correlación temporal
+    const quizCorrData1 = [
+        {
+            q: "Si el gobierno hubiera invertido más, la educación ______ mejor.",
+            opts: [
+                { t: "sería", c: false, f: "No. 'Sería' es condicional simple. Para 'hubiera' necesitamos condicional compuesto." },
+                { t: "habría sido", c: true, f: "¡Exacto! Si hubiera... habría... (Hipótesis irreal del pasado)." },
+                { t: "fue", c: false, f: "Error. No se mezcla subjuntivo con indicativo así." }
+            ]
+        }
+    ];
+
+    const quizCorrData2 = [
+        {
+            q: "La ministra dijo: 'Implementaremos reformas'. En discurso indirecto:",
+            opts: [
+                { t: "La ministra dijo que implementarán reformas", c: false, f: "Error de correlación. El futuro debe retroceder." },
+                { t: "La ministra dijo que implementaría reformas", c: true, f: "¡Correcto! Futuro → Condicional en discurso referido." },
+                { t: "La ministra dijo que implementará reformas", c: false, f: "No mantiene correlación temporal." }
+            ]
+        },
+        {
+            q: "Si mañana llueve, nosotros ______ la reunión.",
+            opts: [
+                { t: "cancelaríamos", c: false, f: "Condicional indica hipótesis. Pero 'si llueve' (presente) es real." },
+                { t: "cancelaremos", c: true, f: "¡Bien! Si + presente indicativo → futuro indicativo (situación probable)." },
+                { t: "canceláramos", c: false, f: "Ese es subjuntivo imperfecto, no corresponde aquí." }
+            ]
+        }
+    ];
+
+    renderSimpleQuiz('quiz-corr-container-1', quizCorrData1);
+    renderSimpleQuiz('quiz-corr-container-2', quizCorrData2);
+
+    // ==========================================
+    // MÓDULO 3: COHESIÓN
+    // ==========================================
+
+    const quizCohData1 = [
+        {
+            q: "En el texto, ¿a qué refiere 'Estas'?",
+            opts: [
+                { t: "Al presidente", c: false, f: "No. 'Estas' (femenino plural) no puede referir a 'presidente' (masculino singular)." },
+                { t: "A las medidas económicas", c: true, f: "¡Correcto! 'Estas' refiere anafóricamente a 'medidas económicas'." },
+                { t: "A los analistas", c: false, f: "Incorrecto." }
+            ]
+        },
+        {
+            q: "¿A qué refiere 'las' en 'las consideran'?",
+            opts: [
+                { t: "A las medidas económicas", c: true, f: "¡Bien! 'Las' es pronombre OD que retoma 'medidas'." },
+                { t: "A la inflación", c: false, f: "No coincide en número." }
+            ]
+        }
+    ];
+
+    const quizCohData2 = [
+        {
+            q: "¿A qué refiere 'Esto' en la segunda oración?",
+            opts: [
+                { t: "Al campo argentino", c: false, f: "No. 'Esto' refiere a toda la situación anterior." },
+                { t: "A la sequía y su impacto", c: true, f: "¡Correcto! 'Esto' retoma la idea completa: la sequía afecta al campo." },
+                { t: "A los productores", c: false, f: "No aparece antes en el texto." }
+            ]
+        },
+        {
+            q: "¿A quién refiere 'Ellos'?",
+            opts: [
+                { t: "A los productores", c: true, f: "¡Bien! Referencia anafórica clara." },
+                { t: "Al campo", c: false, f: "'Campo' es masculino singular." }
+            ]
+        }
+    ];
+
+    const quizCohData3 = [
+        {
+            q: "En 'La inflación golpea la economía. Este fenómeno preocupa a todos', ¿qué tipo de cohesión se usa?",
+            opts: [
+                { t: "Referencia pronominal", c: false, f: "No hay pronombre." },
+                { t: "Sustitución léxica (hiperónimo)", c: true, f: "¡Correcto! 'fenómeno' es un hiperónimo que sustituye a 'inflación'." },
+                { t: "Conector causal", c: false, f: "No hay conector." }
+            ]
+        }
+    ];
+
+    const quizCohData4 = [
+        {
+            q: "¿Qué conector completa correctamente? 'Llovió toda la noche. ______, se suspendió el partido.'",
+            opts: [
+                { t: "Sin embargo", c: false, f: "Adversativo. Pero aquí hay causa-consecuencia." },
+                { t: "Por lo tanto", c: true, f: "¡Perfecto! Conector consecutivo/causal." },
+                { t: "Además", c: false, f: "Aditivo. No expresa la relación causal." }
+            ]
+        },
+        {
+            q: "Selecciona el conector: 'La oposición criticó la medida. El gobierno, ______, la defendió.'",
+            opts: [
+                { t: "por ejemplo", c: false, f: "No introduce contraste." },
+                { t: "en cambio", c: true, f: "¡Correcto! Adversativo, marca contraste." },
+                { t: "entonces", c: false, f: "Consecutivo, no adversativo." }
+            ]
+        }
+    ];
+
+    const quizCohData5 = [
+        {
+            q: "¿Qué elemento está elidido (Ø)?",
+            opts: [
+                { t: "El verbo 'debatieron'", c: false, f: "Ese verbo está presente en la primera oración." },
+                { t: "El sujeto 'Los senadores'", c: true, f: "¡Exacto! Se omite porque es recuperable del contexto." },
+                { t: "El objeto 'la ley'", c: false, f: "Aparece 'el proyecto', no hay elipsis del objeto." }
+            ]
+        }
+    ];
+
+    renderSimpleQuiz('quiz-coh-container-1', quizCohData1);
+    renderSimpleQuiz('quiz-coh-container-2', quizCohData2);
+    renderSimpleQuiz('quiz-coh-container-3', quizCohData3);
+    renderSimpleQuiz('quiz-coh-container-4', quizCohData4);
+    renderSimpleQuiz('quiz-coh-container-5', quizCohData5);
+
+    // Práctica interactiva cohesión
+    const cohesionHuntData = [
+        { w: "La", t: "o" }, { w: "universidad", t: "o" }, { w: "implementó", t: "o" },
+        { w: "cambios.", t: "o" }, { w: "Estos", t: "ref", f: "¡Bien! 'Estos' refiere a 'cambios'." },
+        { w: "beneficiarán", t: "o" }, { w: "a", t: "o" }, { w: "los", t: "o" },
+        { w: "estudiantes.", t: "o" }, { w: "Ellos", t: "ref", f: "¡Correcto! 'Ellos' = estudiantes." },
+        { w: "celebraron", t: "o" }, { w: "la", t: "o" }, { w: "noticia.", t: "o" }
+    ];
+
+    function initCohesionHunt() {
+        const container = document.getElementById('cohesion-hunt-text');
+        let html = '';
+        cohesionHuntData.forEach(item => {
+            if(item.t === 'o') {
+                html += `<span>${item.w} </span>`;
+            } else {
+                html += `<span class="clickable-word" onclick="checkCohesion(this, '${item.t}', '${item.f}')">${item.w} </span>`;
+            }
+        });
+        container.innerHTML = html;
+    }
+
+    function checkCohesion(el, type, feedbackMsg) {
+        const fb = document.getElementById('cohesion-hunt-feedback');
+        if (type === 'ref') {
+            el.className = 'clickable-word correct';
+            fb.className = 'feedback success';
+            fb.innerHTML = "✅ " + feedbackMsg;
+        } else {
+            el.className = 'clickable-word wrong';
+            fb.className = 'feedback error';
+            fb.innerHTML = "❌ Esa palabra no es un recurso de cohesión en este contexto.";
+        }
+        fb.style.display = 'block';
+    }
+
+    // ==========================================
+    // UTILIDADES
+    // ==========================================
+    function renderSimpleQuiz(containerId, data) {
+        const container = document.getElementById(containerId);
+        let html = '';
+        data.forEach((item, idx) => {
+            html += `<div style="margin-bottom: 20px;">
+                <p><strong>${item.q}</strong></p>
+                ${item.opts.map((opt, oIdx) => `
+                    <button class="quiz-option" onclick="checkSimpleQuiz(this, ${opt.c}, '${opt.f.replace(/'/g, "\\'")}')">${opt.t}</button>
+                `).join('')}
+                <div class="feedback"></div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    function checkSimpleQuiz(btn, isCorrect, msg) {
+        const parent = btn.parentElement;
+        const feedback = parent.querySelector('.feedback');
+        parent.querySelectorAll('button').forEach(b => {
+            b.style.background = '#f1f2f6';
+            b.style.borderColor = 'transparent';
+            b.disabled = true;
+        });
+
+        if (isCorrect) {
+            btn.style.background = '#d4edda';
+            btn.style.borderColor = '#27ae60';
+            feedback.className = 'feedback success';
+            feedback.innerHTML = '✅ ' + msg;
+        } else {
+            btn.style.background = '#f8d7da';
+            btn.style.borderColor = '#c0392b';
+            feedback.className = 'feedback error';
+            feedback.innerHTML = '❌ ' + msg + ' <button onclick="resetBtnGroup(this)" style="font-size:0.8rem; margin-left:10px;">Reintentar</button>';
+        }
+        feedback.style.display = 'block';
+    }
+
+    window.resetBtnGroup = function(btn) {
+        const group = btn.parentElement.parentElement;
+        const feedback = group.querySelector('.feedback');
+        feedback.style.display = 'none';
+        group.querySelectorAll('.quiz-option').forEach(b => {
+            b.disabled = false;
+            b.style.background = '#f1f2f6';
+            b.style.borderColor = 'transparent';
+        });
+    };
+
+    // Inicialización
+    initSynoptic(1);
+    initSynoptic(2);
+    initVerbHunt(1, verbTextData1, 'verb-hunt-text-1', 'verb-hunt-feedback-1');
+    initVerbHunt(2, verbTextData2, 'verb-hunt-text-2', 'verb-hunt-feedback-2');
+    initCohesionHunt();
+
+</script>
+
+</body>
+</html>
